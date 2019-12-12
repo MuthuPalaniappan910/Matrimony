@@ -15,9 +15,12 @@ import com.match.matrimony.entity.UserProfile;
 import com.match.matrimony.exception.UserProfileException;
 import com.match.matrimony.repository.UserProfileRepository;
 
+import lombok.extern.slf4j.Slf4j;
+
 
 
 @Service
+@Slf4j
 public class UserProfileServiceImpl implements UserProfileService {
 	@Autowired
 	UserProfileRepository userProfileRepository;
@@ -63,14 +66,17 @@ public class UserProfileServiceImpl implements UserProfileService {
 
 	
 	/**
+	 * Method to view the detailed profile view of the match that interests the user.
 	 * @author chethana
 	 * @param userProfileId
 	 * @return
 	 * @throws UserProfileException
 	 */
 	public Optional<UserProfileResponsedto> viewProfile(Long userProfileId) throws UserProfileException{
+		log.info("Entering into viewProfile() of UserProfileServiceImpl");
 		Optional<UserProfile> userProfileResponse= userProfileRepository.findById(userProfileId);
 		if(!userProfileResponse.isPresent()) {
+			log.info("Exception Occured in viewProfile() of UserProfileServiceImpl");
 			throw new UserProfileException(ApplicationConstants.NO_PROFILE);
 		}
 		UserProfileResponsedto userProfileResponsedto= new UserProfileResponsedto();
