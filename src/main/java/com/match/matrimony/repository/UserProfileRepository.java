@@ -1,6 +1,7 @@
 package com.match.matrimony.repository;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
@@ -14,5 +15,6 @@ public interface UserProfileRepository extends JpaRepository<UserProfile, Long> 
 	
 	List<UserProfile> findAllByUserProfileIdNot(Long userProfileId);
 
+	Optional<UserProfile> findByUserProfileIdAndUserProfilePassword(Long userProfileId, String userProfilePassword);
 
 }

@@ -14,5 +14,6 @@ public class ApplicationConstants {
 	public static final String NO_MATCHLIST_FOUND = "No matching list is found for the particular profile";
 	public static final String SUCCESS = "Success";
 	
+	public static final String NO_PROFILE="Unable to view profile Details";
 	
 }
