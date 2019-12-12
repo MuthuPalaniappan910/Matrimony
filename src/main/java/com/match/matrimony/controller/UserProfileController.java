@@ -12,12 +12,13 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.match.matrimony.constants.ApplicationConstants;
 import com.match.matrimony.dto.DashboardResponse;
 import com.match.matrimony.dto.DashboardResponseDto;
+import com.match.matrimony.dto.FavouriteProfileRequestDto;
+import com.match.matrimony.dto.FavouriteProfileResponsedto;
 import com.match.matrimony.dto.LoginRequestDto;
 import com.match.matrimony.dto.LoginResponseDto;
 import com.match.matrimony.dto.UserProfileResponsedto;
@@ -72,12 +73,13 @@ public class UserProfileController {
 
 	/**
 	 * Method to view the detailed profile view of the match that interests the user.
+	 * @author Chethana
 	 * @param userProfileId
 	 * @return
 	 * @throws UserProfileException throws if there is no record found for my interested match
 	 */
 	@GetMapping("/{userProfileId}")
-	public ResponseEntity<Optional<UserProfileResponsedto>> viewProfile(@RequestParam Long userProfileId) throws UserProfileException{
+	public ResponseEntity<Optional<UserProfileResponsedto>> viewProfile(@PathVariable Long userProfileId) throws UserProfileException{
 		log.info("Entering into viewProfile() method of UserProfileController");
 		Optional<UserProfileResponsedto> userProfileResponsedto=userProfileService.viewProfile(userProfileId);
 		if(!userProfileResponsedto.isPresent()) {
@@ -110,7 +112,31 @@ public class UserProfileController {
 		loginResponseDto.setMessage(ApplicationConstants.USERPROFILE_FAILURE_MESSAGE);
 		return new ResponseEntity<>(loginResponseDto, HttpStatus.NOT_FOUND);
 	}
+	
+	/**
+	 * Method to add the match as his/her favourite profile
+	 * @author Chethana
+	 * @param favouriteProfileRequestDto accepts userprofileId and Interested matchId
+	 * @return
+	 * @throws UserProfileException throws when failed to add the interested match to favourites
+	 */
+	@PostMapping("/favourites")
+	public ResponseEntity<Optional<FavouriteProfileResponsedto>> addFavourite(@RequestBody FavouriteProfileRequestDto favouriteProfileRequestDto) throws UserProfileException {
 
+		Optional<FavouriteProfileResponsedto> favouriteProfileResponsedto = userProfileService
+				.addFavourite(favouriteProfileRequestDto);
+		if (!favouriteProfileResponsedto.isPresent()) {
+			FavouriteProfileResponsedto favouriteProfileResponse = new FavouriteProfileResponsedto();
+			favouriteProfileResponse.setStatusCode(ApplicationConstants.USERPROFILE_FAILURE_CODE);
+			favouriteProfileResponse.setMessage(ApplicationConstants.USERPROFILE_FAILURE_MESSAGE);
+			return new ResponseEntity<>(Optional.of(favouriteProfileResponse), HttpStatus.NOT_FOUND);
+		}
+		favouriteProfileResponsedto.get().setMessage(ApplicationConstants.SUCCESS);
+		favouriteProfileResponsedto.get().setStatusCode(ApplicationConstants.USERPROFILE_SUCCESS_CODE);
+		return new ResponseEntity<>(favouriteProfileResponsedto, HttpStatus.OK);
+	}
+	 
+	 
 
 }
 

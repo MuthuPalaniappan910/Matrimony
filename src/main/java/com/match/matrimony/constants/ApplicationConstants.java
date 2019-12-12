@@ -15,5 +15,10 @@ public class ApplicationConstants {
 	public static final String SUCCESS = "Success";
 	
 	public static final String NO_PROFILE="Unable to view profile Details";
+	public static final String ALREADY_ADDED="Already added to favourites";
+	
+	public static final String INVALID_PROFILE="Invalid Profile";
+	public static final String INVALID_MATCH="Invalid Match";
+	
 	
 }

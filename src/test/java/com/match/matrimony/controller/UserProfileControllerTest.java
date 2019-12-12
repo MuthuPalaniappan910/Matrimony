@@ -114,7 +114,7 @@ public class UserProfileControllerTest {
 	}
 	
 	@Test
-	public void x() throws UserProfileException {
+	public void testViewProfileNegative() throws UserProfileException {
 		Mockito.when(userProfileService.viewProfile(2L)).thenReturn(Optional.ofNullable(null));
 		ResponseEntity<Optional<UserProfileResponsedto>> userProfileResponsedto=userProfileController.viewProfile(1L);
 		Assert.assertNotNull(userProfileResponsedto);

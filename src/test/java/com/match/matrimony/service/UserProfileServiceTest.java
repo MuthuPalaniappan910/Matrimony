@@ -13,6 +13,8 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 
+import com.match.matrimony.dto.FavouriteProfileRequestDto;
+import com.match.matrimony.dto.FavouriteProfileResponsedto;
 import com.match.matrimony.dto.LoginRequestDto;
 import com.match.matrimony.dto.UserProfileResponsedto;
 import com.match.matrimony.entity.UserProfile;
@@ -30,7 +32,8 @@ public class UserProfileServiceTest {
 
 	UserProfile userProfile = null;
 	LoginRequestDto loginRequestDto = null;
-
+	FavouriteProfileResponsedto favouriteProfileResponsedto= new FavouriteProfileResponsedto();
+	FavouriteProfileRequestDto favouriteProfileRequestDto= new FavouriteProfileRequestDto();
 	@Before
 	public void before() {
 		userProfile = new UserProfile();
@@ -40,6 +43,9 @@ public class UserProfileServiceTest {
 		userProfile.setUserProfilePassword("muthu123");
 		loginRequestDto.setUserProfileId(1L);
 		loginRequestDto.setUserProfilePassword("muthu123");
+		
+		favouriteProfileRequestDto.setUserMatchId(2L);
+		favouriteProfileRequestDto.setUserProfileId(1L);
 	}
 
 	@Test
@@ -62,5 +68,17 @@ public class UserProfileServiceTest {
 	public void testViewProfileNegative() throws UserProfileException {
 		Mockito.when(userProfileRepository.findById(2L)).thenReturn(Optional.of(userProfile));
 		userProfileServiceImpl.viewProfile(1L);
+	}
+	
+	@Test(expected=UserProfileException.class)
+	public void testAddToFavouriteNegative() throws UserProfileException {
+		Mockito.when(userProfileRepository.findByUserProfileId(1L)).thenReturn(userProfile);
+		userProfileServiceImpl.addFavourite(favouriteProfileRequestDto);
+	}
+	
+	@Test(expected=UserProfileException.class)
+	public void testAddToFavouriteNegativeMatch() throws UserProfileException {
+		Mockito.when(userProfileRepository.findByUserProfileId(2L)).thenReturn(userProfile);
+		userProfileServiceImpl.addFavourite(favouriteProfileRequestDto);
 	}
 }

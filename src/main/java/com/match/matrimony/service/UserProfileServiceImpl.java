@@ -10,9 +10,13 @@ import org.springframework.stereotype.Service;
 
 import com.match.matrimony.constants.ApplicationConstants;
 import com.match.matrimony.dto.DashboardResponse;
+import com.match.matrimony.dto.FavouriteProfileRequestDto;
+import com.match.matrimony.dto.FavouriteProfileResponsedto;
 import com.match.matrimony.dto.UserProfileResponsedto;
+import com.match.matrimony.entity.UserFavourite;
 import com.match.matrimony.entity.UserProfile;
 import com.match.matrimony.exception.UserProfileException;
+import com.match.matrimony.repository.UserFavouriteRepository;
 import com.match.matrimony.repository.UserProfileRepository;
 
 import lombok.extern.slf4j.Slf4j;
@@ -24,6 +28,9 @@ import lombok.extern.slf4j.Slf4j;
 public class UserProfileServiceImpl implements UserProfileService {
 	@Autowired
 	UserProfileRepository userProfileRepository;
+	
+	@Autowired
+	UserFavouriteRepository userFavouriteRepository;
 
 	/**
 	 * @author Bindushree
@@ -88,5 +95,42 @@ public class UserProfileServiceImpl implements UserProfileService {
 	public Optional<UserProfile> userLogin(Long userProfileId, String userProfilePassword) {
 		return userProfileRepository.findByUserProfileIdAndUserProfilePassword(userProfileId,userProfilePassword);
 
+	}
+
+
+	/**
+	 * Method to add the match as his/her favourite profile.
+	 * 
+	 * @author chethana
+	 * @param favouriteProfileRequestDto contains userprofileId and InterestedMatchprofileId
+	 * @return FavouriteProfileResponsedto
+	 * @throws UserProfileException 
+	 * 
+	 */
+	public Optional<FavouriteProfileResponsedto> addFavourite(FavouriteProfileRequestDto favouriteProfileRequestDto) throws UserProfileException {
+		log.info("Entering into addFavourite() of UserProfileServiceImpl");
+		UserProfile userProfile= userProfileRepository.findByUserProfileId(favouriteProfileRequestDto.getUserProfileId());
+		if(userProfile!=null) {
+			UserProfile userMatchProfile= userProfileRepository.findByUserProfileId(favouriteProfileRequestDto.getUserMatchId());
+			if(userMatchProfile!=null) {
+				Optional<UserFavourite> userFavouriteResponse=userFavouriteRepository.findByUserProfileIdAndUserMatchId(userProfile,userMatchProfile);
+				
+				if(userFavouriteResponse.isPresent()) {
+					throw new UserProfileException(ApplicationConstants.ALREADY_ADDED);
+				}
+				UserFavourite userFavourite=new UserFavourite();
+				userFavourite.setUserMatchId(userMatchProfile);
+				userFavourite.setUserProfileId(userProfile);
+				userFavouriteRepository.save(userFavourite);
+			}
+			else
+			{
+				throw new UserProfileException(ApplicationConstants.INVALID_MATCH);
+			}
+		}
+		else {
+			throw new UserProfileException(ApplicationConstants.INVALID_PROFILE);
+		}
+		return Optional.of(new FavouriteProfileResponsedto()) ;	
 	}
 }
