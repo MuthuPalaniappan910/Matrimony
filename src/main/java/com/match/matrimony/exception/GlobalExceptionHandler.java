@@ -11,8 +11,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 public class GlobalExceptionHandler {
 
-	@ExceptionHandler(value = PolicyClaimNotFoundException.class)
-	public ResponseEntity<ErrorResponse> handleException(PolicyClaimNotFoundException exception) {
+	@ExceptionHandler(value = NoMatchListFoundException.class)
+	public ResponseEntity<ErrorResponse> handleException(NoMatchListFoundException exception) {
 		ErrorResponse errorResponse = new ErrorResponse(exception.getMessage());
 		return new ResponseEntity<>(errorResponse, HttpStatus.NOT_ACCEPTABLE);
 	}
