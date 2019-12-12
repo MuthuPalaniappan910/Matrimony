@@ -8,4 +8,6 @@ import lombok.Setter;
 public class LoginResponseDto {
 	private Integer statusCode;
 	private String message;
+	private Long userProfileId;
+	private String gender;
 }

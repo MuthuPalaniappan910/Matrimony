@@ -14,4 +14,5 @@ public class ApplicationConstants {
 	public static final String NO_PROFILE="Unable to view profile Details";
 	
 	public static final String SUCCESS="Success";
+
 }

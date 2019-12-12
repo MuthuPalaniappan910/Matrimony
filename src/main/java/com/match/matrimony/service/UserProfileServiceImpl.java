@@ -12,10 +12,13 @@ import com.match.matrimony.entity.UserProfile;
 import com.match.matrimony.exception.UserProfileException;
 import com.match.matrimony.repository.UserProfileRepository;
 
+
+
 @Service
 public class UserProfileServiceImpl implements UserProfileService {
 	@Autowired
 	UserProfileRepository userProfileRepository;
+
 	
 	/**
 	 * @author chethana
@@ -31,5 +34,11 @@ public class UserProfileServiceImpl implements UserProfileService {
 		UserProfileResponsedto userProfileResponsedto= new UserProfileResponsedto();
 		BeanUtils.copyProperties(userProfileResponse.get(), userProfileResponsedto);
 		return Optional.of(userProfileResponsedto);		
+	}
+
+	@Override
+	public Optional<UserProfile> userLogin(Long userProfileId, String userProfilePassword) {
+		return userProfileRepository.findByUserProfileIdAndUserProfilePassword(userProfileId,userProfilePassword);
+
 	}
 }

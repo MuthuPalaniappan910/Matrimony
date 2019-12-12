@@ -31,4 +31,5 @@ public class UserProfile {
 	private String place;
 	private Double salary;
 	private String expectation;
+
 }
