@@ -5,9 +5,9 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class LoginResponseDto {
-	private Integer statusCode;
-	private String message;
+public class Favourites {
 	private Long userProfileId;
-	private String gender;
+	private String userProfileName;
+	private String religion;
+	private String motherTongue;
 }
