@@ -8,6 +8,8 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.SequenceGenerator;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+
 import lombok.Getter;
 import lombok.Setter;
 
@@ -21,6 +23,7 @@ public class UserProfile {
 	private Long userProfileId;
 	private String userProfileName;
 	private String gender;
+	@JsonFormat(pattern = "yyyy-MMM-dd")
 	private LocalDate dateOfBirth;
 	private Long mobile;
 	private String email;
@@ -29,4 +32,6 @@ public class UserProfile {
 	private String motherTongue;
 	private String profession;
 	private String place;
+	private String expectation;
+	private Double salary;
 }
