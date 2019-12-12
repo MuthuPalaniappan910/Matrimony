@@ -19,6 +19,8 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import com.match.matrimony.constants.ApplicationConstants;
 import com.match.matrimony.dto.DashboardResponse;
 import com.match.matrimony.dto.DashboardResponseDto;
+import com.match.matrimony.dto.FavouriteProfileRequestDto;
+import com.match.matrimony.dto.FavouriteProfileResponsedto;
 import com.match.matrimony.dto.Favourites;
 import com.match.matrimony.dto.LoginRequestDto;
 import com.match.matrimony.dto.LoginResponseDto;
@@ -53,7 +55,8 @@ public class UserProfileControllerTest {
 	Favourites favourites = new Favourites();
 
 	UserProfileResponsedto userProfileResponsedto= new UserProfileResponsedto();
-	
+	FavouriteProfileResponsedto favouriteProfileResponsedto= new FavouriteProfileResponsedto();
+	FavouriteProfileRequestDto favouriteProfileRequestDto= new FavouriteProfileRequestDto();
 	@Before
 	public void before() {
 		dashboardResponses=new ArrayList<>();
@@ -87,6 +90,11 @@ public class UserProfileControllerTest {
 		favouritesList.add(favourites);
 		
 		userProfileResponsedto.setUserProfileId(1L);
+		
+		favouriteProfileRequestDto.setUserMatchId(2L);
+		favouriteProfileRequestDto.setUserProfileId(1L);
+		
+		favouriteProfileResponsedto.setMessage("Sucess");
 	}
 	
 	
@@ -147,5 +155,19 @@ public class UserProfileControllerTest {
 		Mockito.when(userProfileService.viewProfile(2L)).thenReturn(Optional.ofNullable(null));
 		ResponseEntity<Optional<UserProfileResponsedto>> userProfileResponsedto=userProfileController.viewProfile(1L);
 		Assert.assertNotNull(userProfileResponsedto);
+	}
+	
+	@Test
+	public void testAddFavourite() throws UserProfileException {
+		Mockito.when(userProfileService.addFavourite(favouriteProfileRequestDto)).thenReturn(Optional.of(favouriteProfileResponsedto));
+		ResponseEntity<Optional<FavouriteProfileResponsedto>> favouriteProfileResponse=userProfileController.addFavourite(favouriteProfileRequestDto);
+		Assert.assertNotNull(favouriteProfileResponse);
+	}
+	
+	@Test
+	public void testAddFavouriteNegative() throws UserProfileException {
+		Mockito.when(userProfileService.addFavourite(favouriteProfileRequestDto)).thenReturn(Optional.ofNullable(null));
+		ResponseEntity<Optional<FavouriteProfileResponsedto>> favouriteProfileResponse=userProfileController.addFavourite(favouriteProfileRequestDto);
+		Assert.assertNotNull(favouriteProfileResponse);
 	}
 }
