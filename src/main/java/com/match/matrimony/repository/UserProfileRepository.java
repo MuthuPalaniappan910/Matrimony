@@ -17,7 +17,6 @@ public interface UserProfileRepository extends JpaRepository<UserProfile, Long> 
 
 	Optional<UserProfile> findByUserProfileIdAndUserProfilePassword(Long userProfileId, String userProfilePassword);
 
-	Optional<UserProfile> findById(Long userProfileId);
 
 	Optional<UserProfile> findByUserProfileId(UserProfile userMatchId);
 
