@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -16,11 +17,14 @@ import org.mockito.junit.MockitoJUnitRunner;
 
 import com.match.matrimony.dto.Favourites;
 import com.match.matrimony.dto.LoginRequestDto;
+import com.match.matrimony.dto.UserProfileResponsedto;
 import com.match.matrimony.entity.UserFavourite;
 import com.match.matrimony.entity.UserProfile;
 import com.match.matrimony.exception.ProfileNotFoundException;
+import com.match.matrimony.exception.UserProfileException;
 import com.match.matrimony.repository.UserFavouriteRepository;
 import com.match.matrimony.repository.UserProfileRepository;
+
 
 @RunWith(MockitoJUnitRunner.Silent.class)
 public class UserProfileServiceTest {
@@ -73,14 +77,14 @@ public class UserProfileServiceTest {
 
 	@Test(expected = ProfileNotFoundException.class)
 	public void testViewFavouritesNoProfileFound() throws ProfileNotFoundException {
-		Mockito.when(userProfileRepository.findByUserProfileId(2L)).thenReturn(Optional.of(userProfile1));
+		Mockito.when(userProfileRepository.findById(2L)).thenReturn(Optional.of(userProfile1));
 		List<Favourites> expected = userProfileServiceImpl.viewFavourites(1L);
 		assertEquals(0, expected.size());
 	}
 
 	@Test(expected = ProfileNotFoundException.class)
 	public void testViewFavouritesEmptyList() throws ProfileNotFoundException {
-		Mockito.when(userProfileRepository.findByUserProfileId(1L)).thenReturn(Optional.of(userProfile1));
+		Mockito.when(userProfileRepository.findById(1L)).thenReturn(Optional.of(userProfile1));
 		Mockito.when(userFavouriteRepository.findAllByUserProfileId(userProfile2)).thenReturn(userFavouriteList1);
 		List<Favourites> expected = userProfileServiceImpl.viewFavourites(1L);
 		assertEquals(0, expected.size());
@@ -88,10 +92,22 @@ public class UserProfileServiceTest {
 
 	@Test
 	public void testViewFavouritesSuccess() throws ProfileNotFoundException {
-		Mockito.when(userProfileRepository.findByUserProfileId(1L)).thenReturn(Optional.of(userProfile1));
+		Mockito.when(userProfileRepository.findById(1L)).thenReturn(Optional.of(userProfile1));
 		Mockito.when(userFavouriteRepository.findAllByUserProfileId(userProfile1)).thenReturn(userFavouriteList);
-		Mockito.when(userProfileRepository.findByUserProfileId(1L)).thenReturn(Optional.of(userProfile1));
+		Mockito.when(userProfileRepository.findById(1L)).thenReturn(Optional.of(userProfile1));
 		List<Favourites> expected = userProfileServiceImpl.viewFavourites(1L);
 		assertEquals(1, expected.size());
+	}	
+	@Test
+	public void testViewProfile() throws UserProfileException {
+		Mockito.when(userProfileRepository.findById(Mockito.anyLong())).thenReturn(Optional.of(userProfile));
+		Optional<UserProfileResponsedto> userProfileResponsedto=userProfileServiceImpl.viewProfile(1L);
+		Assert.assertNotNull(userProfileResponsedto);
+	}
+	
+	@Test(expected=UserProfileException.class)
+	public void testViewProfileNegative() throws UserProfileException {
+		Mockito.when(userProfileRepository.findById(2L)).thenReturn(Optional.of(userProfile));
+		userProfileServiceImpl.viewProfile(1L);
 	}
 }
