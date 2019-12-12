@@ -10,6 +10,12 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 public class GlobalExceptionHandler {
 
+	@ExceptionHandler(value = ProfileNotFoundException.class)
+	public ResponseEntity<ErrorResponse> handleException(ProfileNotFoundException exception) {
+		ErrorResponse errorResponse = new ErrorResponse(exception.getMessage());
+		return new ResponseEntity<>(errorResponse, HttpStatus.NOT_ACCEPTABLE);
+	
+	}
 
 	@ExceptionHandler(value = UserProfileException.class)
 	public ResponseEntity<ErrorResponse> handleException(UserProfileException exception) {
