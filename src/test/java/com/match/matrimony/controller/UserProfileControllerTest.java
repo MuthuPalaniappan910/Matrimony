@@ -6,21 +6,29 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
+import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
+import com.match.matrimony.constants.ApplicationConstants;
 import com.match.matrimony.dto.DashboardResponse;
 import com.match.matrimony.dto.DashboardResponseDto;
-import com.match.matrimony.constants.ApplicationConstants;
+import com.match.matrimony.dto.Favourites;
 import com.match.matrimony.dto.LoginRequestDto;
 import com.match.matrimony.dto.LoginResponseDto;
+import com.match.matrimony.dto.UserProfileResponsedto;
+import com.match.matrimony.entity.UserFavourite;
 import com.match.matrimony.entity.UserProfile;
+import com.match.matrimony.exception.ProfileNotFoundException;
+import com.match.matrimony.exception.UserProfileException;
 import com.match.matrimony.service.UserProfileService;
+
 
 @RunWith(SpringJUnit4ClassRunner.class)
 public class UserProfileControllerTest {
@@ -39,6 +47,13 @@ public class UserProfileControllerTest {
 	LoginRequestDto loginRequestDto1 = null;
 	LoginResponseDto loginResponseDto = null;
 
+	UserProfile userProfile2 = new UserProfile();
+	List<Favourites> favouritesList = new ArrayList<>();
+	UserFavourite userFavourite = new UserFavourite();
+	Favourites favourites = new Favourites();
+
+	UserProfileResponsedto userProfileResponsedto= new UserProfileResponsedto();
+	
 	@Before
 	public void before() {
 		dashboardResponses=new ArrayList<>();
@@ -64,6 +79,14 @@ public class UserProfileControllerTest {
 		loginRequestDto1 = new LoginRequestDto();
 		loginResponseDto.setStatusCode(ApplicationConstants.USERPROFILE_FAILURE_CODE);
 		loginResponseDto.setMessage(ApplicationConstants.USERPROFILE_FAILURE_MESSAGE);
+
+		userProfile2.setUserProfileId(1L);
+		userFavourite.setUserFavouriteId(1L);
+		userFavourite.setUserMatchId(userProfile2);
+		favourites.setUserProfileId(2L);
+		favouritesList.add(favourites);
+		
+		userProfileResponsedto.setUserProfileId(1L);
 	}
 	
 	
@@ -96,5 +119,33 @@ public class UserProfileControllerTest {
 				loginRequestDto1.getUserProfilePassword())).thenReturn(Optional.of(new UserProfile()));
 		Integer expected = userProfileController.userLogin(loginRequestDto).getStatusCodeValue();
 		assertEquals(ApplicationConstants.USERPROFILE_FAILURE_CODE, expected);
+	}
+
+	@Test
+	public void testViewFavouritesSuccess() throws ProfileNotFoundException {
+		Mockito.when(userProfileService.viewFavourites(1L)).thenReturn(favouritesList);
+		Integer expected = userProfileController.viewFavourites(1L).getStatusCodeValue();
+		assertEquals(ApplicationConstants.USERPROFILE_SUCCESS_CODE, expected);
+	}
+
+	@Test
+	public void testViewFavouritesNegative() throws ProfileNotFoundException {
+		Mockito.when(userProfileService.viewFavourites(2L)).thenReturn(favouritesList);
+		Integer expected = userProfileController.viewFavourites(1L).getStatusCodeValue();
+		assertEquals(ApplicationConstants.USERPROFILE_FAILURE_CODE, expected);
+	}
+	
+	@Test
+	public void testViewProfile() throws UserProfileException {
+		Mockito.when(userProfileService.viewProfile(1L)).thenReturn(Optional.of(userProfileResponsedto));
+		ResponseEntity<Optional<UserProfileResponsedto>> userProfileResponsedto=userProfileController.viewProfile(1L);
+		Assert.assertNotNull(userProfileResponsedto);
+	}
+	
+	@Test
+	public void x() throws UserProfileException {
+		Mockito.when(userProfileService.viewProfile(2L)).thenReturn(Optional.ofNullable(null));
+		ResponseEntity<Optional<UserProfileResponsedto>> userProfileResponsedto=userProfileController.viewProfile(1L);
+		Assert.assertNotNull(userProfileResponsedto);
 	}
 }
