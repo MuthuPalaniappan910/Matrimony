@@ -8,11 +8,17 @@ import org.springframework.web.bind.annotation.RestController;
 
 @ControllerAdvice
 @RestController
-
 public class GlobalExceptionHandler {
+
 
 	@ExceptionHandler(value = UserProfileException.class)
 	public ResponseEntity<ErrorResponse> handleException(UserProfileException exception) {
+		ErrorResponse errorResponse = new ErrorResponse(exception.getMessage());
+		return new ResponseEntity<>(errorResponse, HttpStatus.NOT_ACCEPTABLE);
+	}
+
+	@ExceptionHandler(value = NoMatchListFoundException.class)
+	public ResponseEntity<ErrorResponse> handleException(NoMatchListFoundException exception) {
 		ErrorResponse errorResponse = new ErrorResponse(exception.getMessage());
 		return new ResponseEntity<>(errorResponse, HttpStatus.NOT_ACCEPTABLE);
 	}
