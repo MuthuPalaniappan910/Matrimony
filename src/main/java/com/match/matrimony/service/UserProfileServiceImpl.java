@@ -15,8 +15,10 @@ import com.match.matrimony.entity.UserProfile;
 import com.match.matrimony.exception.UserProfileException;
 import com.match.matrimony.repository.UserProfileRepository;
 
+import lombok.extern.slf4j.Slf4j;
 
 
+@Slf4j
 @Service
 public class UserProfileServiceImpl implements UserProfileService {
 	@Autowired
@@ -29,24 +31,31 @@ public class UserProfileServiceImpl implements UserProfileService {
 	 */
 	@Override
 	public Optional<List<DashboardResponse>> matchList(Long userProfileId) {
+		log.info("Entering into userProfile service matchList method");
 		UserProfile userProfile = userProfileRepository.findByUserProfileId(userProfileId);
 		List<UserProfile> profiles = userProfileRepository.findAllByUserProfileIdNot(userProfileId);
 		List<DashboardResponse> responseList = new ArrayList<>();
+		log.debug("Checking whether user profile list is present");
 		if (!profiles.isEmpty()) {
-			for (UserProfile profile : profiles) {
+			profiles.forEach(profile -> {
 				DashboardResponse dashboardResponse = new DashboardResponse();
-				
+				log.debug("Checking gender of  user profile as female  and list of profiles with male");
 				if (profile.getGender().equalsIgnoreCase("Male")
 						&& userProfile.getGender().equalsIgnoreCase("Female")) {
+					log.debug("Checking DateOfBirth of  user profile is before the list of profiles");
 					if (profile.getDateOfBirth().isBefore(userProfile.getDateOfBirth())) {
+						log.debug("Checking MotherTongue of  user profile  and list of profiles");
 						if (profile.getMotherTongue().equalsIgnoreCase(userProfile.getMotherTongue())) {
 							BeanUtils.copyProperties(profile, dashboardResponse);
 							responseList.add(dashboardResponse);
 						}
 					}
-				} else if (profile.getGender().equalsIgnoreCase("Female")
+				} 
+				else if (profile.getGender().equalsIgnoreCase("Female")
 						&& userProfile.getGender().equalsIgnoreCase("Male")) {
+					log.debug("Checking DateOfBirth of  user profile is after the list of profiles");
 					if (profile.getDateOfBirth().isAfter(userProfile.getDateOfBirth())) {
+						log.debug("Checking gender of  user profile  and list");
 						if (profile.getMotherTongue().equalsIgnoreCase(userProfile.getMotherTongue())) {
 							BeanUtils.copyProperties(profile, dashboardResponse);
 							responseList.add(dashboardResponse);
@@ -54,8 +63,9 @@ public class UserProfileServiceImpl implements UserProfileService {
 					}
 				}
 
-			}
+			});
 		}
+		
 
 		return Optional.of(responseList);
 

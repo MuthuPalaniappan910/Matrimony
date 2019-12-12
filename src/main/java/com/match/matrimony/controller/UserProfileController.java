@@ -53,15 +53,16 @@ public class UserProfileController {
 		log.info("Entering into userProfile service");
 		Optional<List<DashboardResponse>> userProfiles=userProfileService.matchList(userProfileId);
 		DashboardResponseDto dashboardResponseDto=new DashboardResponseDto();
-		
+		log.debug("Checking whether user profile list is present");
 		if(userProfiles.isPresent()) {
+			log.info("User profile list is present");
 			dashboardResponseDto.setDashboardResponses(userProfiles.get());
 			dashboardResponseDto.setMessage(ApplicationConstants.SUCCESS);
 			dashboardResponseDto.setStatusCode(ApplicationConstants.USERPROFILE_SUCCESS_CODE);
 			return new ResponseEntity<>(dashboardResponseDto, HttpStatus.OK);
 			
 		}
-		log.info("User profile is empty");
+		log.error("User profile is empty");
 		dashboardResponseDto.setMessage(ApplicationConstants.NO_MATCHLIST_FOUND);
 		dashboardResponseDto.setStatusCode(ApplicationConstants.USERPROFILE_FAILURE_CODE);
 		return new ResponseEntity<>(dashboardResponseDto, HttpStatus.NOT_FOUND);
