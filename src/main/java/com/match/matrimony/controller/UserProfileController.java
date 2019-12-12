@@ -31,10 +31,10 @@ public class UserProfileController {
 
 
 	/**
-	 * 
+	 * Method to view the detailed profile view of the match that interests the user.
 	 * @param userProfileId
 	 * @return
-	 * @throws UserProfileException
+	 * @throws UserProfileException throws if there is no record found for my interested match
 	 */
 	@GetMapping("/{userProfileId}")
 	public ResponseEntity<Optional<UserProfileResponsedto>> viewProfile(@RequestParam Long userProfileId) throws UserProfileException{
@@ -42,7 +42,10 @@ public class UserProfileController {
 		Optional<UserProfileResponsedto> userProfileResponsedto=userProfileService.viewProfile(userProfileId);
 		if(!userProfileResponsedto.isPresent()) {
 			log.error("Exception occured in viewProfile of UserProfileController");
-			throw new UserProfileException(ApplicationConstants.NO_PROFILE);
+			UserProfileResponsedto UserProfileResponsedto= new UserProfileResponsedto();
+			UserProfileResponsedto.setMessage(ApplicationConstants.NO_PROFILE);
+			UserProfileResponsedto.setStatusCode(ApplicationConstants.USERPROFILE_FAILURE_CODE);
+			return new ResponseEntity<>(userProfileResponsedto,HttpStatus.NOT_FOUND);
 		}
 		userProfileResponsedto.get().setMessage(ApplicationConstants.SUCCESS);
 		userProfileResponsedto.get().setStatusCode(ApplicationConstants.USERPROFILE_SUCCESS_CODE);

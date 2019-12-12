@@ -4,6 +4,7 @@ import static org.junit.Assert.assertEquals;
 
 import java.util.Optional;
 
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -13,8 +14,11 @@ import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import com.match.matrimony.dto.LoginRequestDto;
+import com.match.matrimony.dto.UserProfileResponsedto;
 import com.match.matrimony.entity.UserProfile;
+import com.match.matrimony.exception.UserProfileException;
 import com.match.matrimony.repository.UserProfileRepository;
+
 
 @RunWith(MockitoJUnitRunner.class)
 public class UserProfileServiceTest {
@@ -45,5 +49,18 @@ public class UserProfileServiceTest {
 		Optional<UserProfile> expected = userProfileServiceImpl.userLogin(loginRequestDto.getUserProfileId(),
 				loginRequestDto.getUserProfilePassword());
 		assertEquals(true, expected.isPresent());
+	}
+	
+	@Test
+	public void testViewProfile() throws UserProfileException {
+		Mockito.when(userProfileRepository.findById(Mockito.anyLong())).thenReturn(Optional.of(userProfile));
+		Optional<UserProfileResponsedto> userProfileResponsedto=userProfileServiceImpl.viewProfile(1L);
+		Assert.assertNotNull(userProfileResponsedto);
+	}
+	
+	@Test(expected=UserProfileException.class)
+	public void testViewProfileNegative() throws UserProfileException {
+		Mockito.when(userProfileRepository.findById(2L)).thenReturn(Optional.of(userProfile));
+		userProfileServiceImpl.viewProfile(1L);
 	}
 }
