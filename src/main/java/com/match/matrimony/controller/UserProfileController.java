@@ -112,9 +112,9 @@ public class UserProfileController {
 		Optional<UserProfileResponsedto> userProfileResponsedto=userProfileService.viewProfile(userProfileId);
 		if(!userProfileResponsedto.isPresent()) {
 			log.error("Exception occured in viewProfile of UserProfileController");
-			UserProfileResponsedto UserProfileResponsedto= new UserProfileResponsedto();
-			UserProfileResponsedto.setMessage(ApplicationConstants.NO_PROFILE);
-			UserProfileResponsedto.setStatusCode(ApplicationConstants.USERPROFILE_FAILURE_CODE);
+			UserProfileResponsedto userProfileResponse= new UserProfileResponsedto();
+			userProfileResponse.setMessage(ApplicationConstants.NO_PROFILE);
+			userProfileResponse.setStatusCode(ApplicationConstants.USERPROFILE_FAILURE_CODE);
 			return new ResponseEntity<>(userProfileResponsedto,HttpStatus.NOT_FOUND);
 		}
 		userProfileResponsedto.get().setMessage(ApplicationConstants.SUCCESS);

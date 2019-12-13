@@ -2,6 +2,7 @@ package com.match.matrimony.service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 import org.springframework.beans.BeanUtils;
@@ -79,10 +80,8 @@ public class UserProfileServiceImpl implements UserProfileService {
 					log.debug("Checking DateOfBirth of  user profile is before the list of profiles");
 					if (profile.getDateOfBirth().isBefore(userProfile.getDateOfBirth())) {
 						log.debug("Checking MotherTongue of  user profile  and list of profiles");
-						if (profile.getMotherTongue().equalsIgnoreCase(userProfile.getMotherTongue())) {
 							BeanUtils.copyProperties(profile, dashboardResponse);
 							responseList.add(dashboardResponse);
-						}
 					}
 				} 
 				else if (profile.getGender().equalsIgnoreCase("Female")
@@ -90,10 +89,8 @@ public class UserProfileServiceImpl implements UserProfileService {
 					log.debug("Checking DateOfBirth of  user profile is after the list of profiles");
 					if (profile.getDateOfBirth().isAfter(userProfile.getDateOfBirth())) {
 						log.debug("Checking gender of  user profile  and list");
-						if (profile.getMotherTongue().equalsIgnoreCase(userProfile.getMotherTongue())) {
 							BeanUtils.copyProperties(profile, dashboardResponse);
 							responseList.add(dashboardResponse);
-						}
 					}
 				}
 
@@ -147,10 +144,10 @@ public class UserProfileServiceImpl implements UserProfileService {
 		log.info("Entering into addFavourite() of UserProfileServiceImpl");
 		UserProfile userProfile = userProfileRepository
 				.findByUserProfileId(favouriteProfileRequestDto.getUserProfileId());
-		if (userProfile != null) {
+		if (userProfile!=null) {
 			UserProfile userMatchProfile = userProfileRepository
 					.findByUserProfileId(favouriteProfileRequestDto.getUserMatchId());
-			if (userMatchProfile != null) {
+			if (userMatchProfile!=null) {
 				Optional<UserFavourite> userFavouriteResponse = userFavouriteRepository
 						.findByUserProfileIdAndUserMatchId(userProfile, userMatchProfile);
 
