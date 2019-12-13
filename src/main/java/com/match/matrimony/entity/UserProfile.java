@@ -32,6 +32,7 @@ public class UserProfile {
 	private String motherTongue;
 	private String profession;
 	private String place;
+	private Double salary;
 	private String expectation;
 
 }
