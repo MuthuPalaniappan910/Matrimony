@@ -264,7 +264,8 @@ public class UserProfileServiceTest {
 	@Test
 	public void testAddToFavouriteFavourite() throws UserProfileException {
 		Mockito.when(userProfileRepository.findByUserProfileId(Mockito.anyLong())).thenReturn(userProfile);
-		userProfileServiceImpl.addFavourite(favouriteProfileRequestDto);
+		Optional<FavouriteProfileResponsedto> favouriteProfileResponsedto=userProfileServiceImpl.addFavourite(favouriteProfileRequestDto);
+		Assert.assertNotNull(favouriteProfileResponsedto);
 	}
 	
 	@Test(expected=UserProfileException.class)
