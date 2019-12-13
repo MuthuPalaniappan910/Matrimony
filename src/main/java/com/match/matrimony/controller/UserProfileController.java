@@ -30,7 +30,6 @@ import com.match.matrimony.service.UserProfileService;
 
 import lombok.extern.slf4j.Slf4j;
 
-
 /**
  * 
  * @author Spark
@@ -43,56 +42,58 @@ import lombok.extern.slf4j.Slf4j;
 public class UserProfileController {
 	@Autowired
 	UserProfileService userProfileService;
-	
+
 	/**
 	 * The matchList method is used fetch all records based on pre defined criteria
 	 * 
 	 * @param userProfileId
 	 * @return
 	 */
-	
+
 	@GetMapping("/{userProfileId}/dashboard")
 	public ResponseEntity<DashboardResponseDto> matchList(@PathVariable Long userProfileId) {
 		log.info("Entering into userProfile service");
-		Optional<List<DashboardResponse>> userProfiles=userProfileService.matchList(userProfileId);
-		DashboardResponseDto dashboardResponseDto=new DashboardResponseDto();
-		
-		if(userProfiles.isPresent()) {
+		Optional<List<DashboardResponse>> userProfiles = userProfileService.matchList(userProfileId);
+		DashboardResponseDto dashboardResponseDto = new DashboardResponseDto();
+
+		if (userProfiles.isPresent()) {
 			dashboardResponseDto.setDashboardResponses(userProfiles.get());
 			dashboardResponseDto.setMessage(ApplicationConstants.SUCCESS);
 			dashboardResponseDto.setStatusCode(ApplicationConstants.USERPROFILE_SUCCESS_CODE);
 			return new ResponseEntity<>(dashboardResponseDto, HttpStatus.OK);
-			
+
 		}
 		log.info("User profile is empty");
 		dashboardResponseDto.setMessage(ApplicationConstants.NO_MATCHLIST_FOUND);
 		dashboardResponseDto.setStatusCode(ApplicationConstants.USERPROFILE_FAILURE_CODE);
 		return new ResponseEntity<>(dashboardResponseDto, HttpStatus.NOT_FOUND);
-		
-		
+
 	}
 
-
 	/**
-	 * Method to view the detailed profile view of the match that interests the user.
+	 * Method to view the detailed profile view of the match that interests the
+	 * user.
+	 * 
 	 * @param userProfileId
 	 * @return
-	 * @throws UserProfileException throws if there is no record found for my interested match
+	 * @throws UserProfileException throws if there is no record found for my
+	 *                              interested match
 	 */
 	@GetMapping("/{userProfileId}")
-	public ResponseEntity<Optional<UserProfileResponsedto>> viewProfile(@RequestParam Long userProfileId) throws UserProfileException{
+	public ResponseEntity<Optional<UserProfileResponsedto>> viewProfile(@RequestParam Long userProfileId)
+			throws UserProfileException {
 		log.info("Entering into viewProfile() method of UserProfileController");
-		Optional<UserProfileResponsedto> userProfileResponsedto=userProfileService.viewProfile(userProfileId);
-		if(!userProfileResponsedto.isPresent()) {
+		Optional<UserProfileResponsedto> userProfileResponsedto = userProfileService.viewProfile(userProfileId);
+		if (!userProfileResponsedto.isPresent()) {
 			log.error("Exception occured in viewProfile of UserProfileController");
-			UserProfileResponsedto UserProfileResponsedto= new UserProfileResponsedto();
+			UserProfileResponsedto UserProfileResponsedto = new UserProfileResponsedto();
 			UserProfileResponsedto.setMessage(ApplicationConstants.NO_PROFILE);
 			UserProfileResponsedto.setStatusCode(ApplicationConstants.USERPROFILE_FAILURE_CODE);
-			return new ResponseEntity<>(userProfileResponsedto,HttpStatus.NOT_FOUND);
+			return new ResponseEntity<>(userProfileResponsedto, HttpStatus.NOT_FOUND);
 		}
 		userProfileResponsedto.get().setMessage(ApplicationConstants.SUCCESS);
 		userProfileResponsedto.get().setStatusCode(ApplicationConstants.USERPROFILE_SUCCESS_CODE);
-		return new ResponseEntity<>(userProfileResponsedto,HttpStatus.OK);		
+		return new ResponseEntity<>(userProfileResponsedto, HttpStatus.OK);
 	}
 
 	/**
@@ -152,5 +153,30 @@ public class UserProfileController {
 		return new ResponseEntity<>(favouritesResponseDto, HttpStatus.OK);
 	}
 
-}
+	/**
+	 * Method returns the list of persons who had added his/her as favourites
+	 * 
+	 * @author Muthu
+	 * 
+	 * @param userMatchId
+	 * @return
+	 * @throws ProfileNotFoundException
+	 */
 
+	@GetMapping("{userMatchId}/match")
+	public ResponseEntity<FavouritesResponseDto> viewMatch(@PathVariable("userMatchId") Long userMatchId)
+			throws ProfileNotFoundException {
+		List<Favourites> matchList = userProfileService.viewMatch(userMatchId);
+		FavouritesResponseDto favouritesResponseDto = new FavouritesResponseDto();
+		if (matchList.isEmpty()) {
+			favouritesResponseDto.setStatusCode(ApplicationConstants.USERPROFILE_FAILURE_CODE);
+			favouritesResponseDto.setMessage(ApplicationConstants.USERPROFILE_EMPTY_FAVOURITES_LIST);
+			return new ResponseEntity<>(favouritesResponseDto, HttpStatus.NOT_FOUND);
+		}
+		favouritesResponseDto.setFavouritesList(matchList);
+		favouritesResponseDto.setStatusCode(ApplicationConstants.USERPROFILE_SUCCESS_CODE);
+		favouritesResponseDto.setMessage(ApplicationConstants.USERPROFILE_FAVOURITES_LIST);
+		return new ResponseEntity<>(favouritesResponseDto, HttpStatus.OK);
+	}
+
+}

@@ -12,6 +12,8 @@ import com.match.matrimony.entity.UserProfile;
 public interface UserFavouriteRepository extends JpaRepository<UserFavourite, Long> {
 
 	List<UserFavourite> findAllByUserProfileId(UserProfile userProfile);
+	
+	List<UserFavourite> findAllByUserMatchId(UserProfile userProfile);
 
 	
 

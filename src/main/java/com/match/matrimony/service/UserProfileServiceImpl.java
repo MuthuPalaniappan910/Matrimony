@@ -120,5 +120,28 @@ public class UserProfileServiceImpl implements UserProfileService {
 		return Optional.of(userProfileResponsedto);		
 	}
 
+	@Override
+	public List<Favourites> viewMatch(Long userMatchId) throws ProfileNotFoundException {
+		Optional<UserProfile> userProfile = userProfileRepository.findById(userMatchId);
+		List<Favourites> favouritesList = new ArrayList();
+		if (userProfile.isPresent()) {
+			List<UserFavourite> userFavourite = userFavouriteRepository.findAllByUserMatchId(userProfile.get());
+			if (!userFavourite.isEmpty()) {
+				userFavourite.forEach(favList -> {
+					Optional<UserProfile> userProfileResponse = userProfileRepository
+							.findById(favList.getUserProfileId().getUserProfileId());
+					if (userProfileResponse.isPresent()) {
+						Favourites favourites = new Favourites();
+						BeanUtils.copyProperties(userProfileResponse.get(), favourites);
+						favouritesList.add(favourites);
+					}
+				});
+				return favouritesList;
+			}
+			throw new ProfileNotFoundException(ApplicationConstants.PROFILE_NOT_FOUND);
+		}
+		throw new ProfileNotFoundException(ApplicationConstants.PROFILE_NOT_FOUND);
+	}
+
 	
 }

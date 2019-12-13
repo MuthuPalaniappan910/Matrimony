@@ -38,4 +38,6 @@ public interface UserProfileService {
 	Optional<List<DashboardResponse>> matchList(Long userProfileId);
 
 	Optional<UserProfileResponsedto> viewProfile(Long userProfileId) throws UserProfileException;
+
+	List<Favourites> viewMatch(Long userMatchId) throws ProfileNotFoundException;
 }
