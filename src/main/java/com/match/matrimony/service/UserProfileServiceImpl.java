@@ -24,7 +24,6 @@ import com.match.matrimony.repository.UserProfileRepository;
 
 import lombok.extern.slf4j.Slf4j;
 
-
 @Service
 @Slf4j
 public class UserProfileServiceImpl implements UserProfileService {
@@ -80,27 +79,21 @@ public class UserProfileServiceImpl implements UserProfileService {
 					log.debug("Checking DateOfBirth of  user profile is before the list of profiles");
 					if (profile.getDateOfBirth().isBefore(userProfile.getDateOfBirth())) {
 						log.debug("Checking MotherTongue of  user profile  and list of profiles");
-						if (profile.getMotherTongue().equalsIgnoreCase(userProfile.getMotherTongue())) {
-							BeanUtils.copyProperties(profile, dashboardResponse);
-							responseList.add(dashboardResponse);
-						}
+						BeanUtils.copyProperties(profile, dashboardResponse);
+						responseList.add(dashboardResponse);
 					}
-				} 
-				else if (profile.getGender().equalsIgnoreCase("Female")
+				} else if (profile.getGender().equalsIgnoreCase("Female")
 						&& userProfile.getGender().equalsIgnoreCase("Male")) {
 					log.debug("Checking DateOfBirth of  user profile is after the list of profiles");
 					if (profile.getDateOfBirth().isAfter(userProfile.getDateOfBirth())) {
 						log.debug("Checking gender of  user profile  and list");
-						if (profile.getMotherTongue().equalsIgnoreCase(userProfile.getMotherTongue())) {
-							BeanUtils.copyProperties(profile, dashboardResponse);
-							responseList.add(dashboardResponse);
-						}
+						BeanUtils.copyProperties(profile, dashboardResponse);
+						responseList.add(dashboardResponse);
 					}
 				}
 
 			});
 		}
-		
 
 		return Optional.of(responseList);
 
@@ -148,10 +141,12 @@ public class UserProfileServiceImpl implements UserProfileService {
 		log.info("Entering into addFavourite() of UserProfileServiceImpl");
 		UserProfile userProfile = userProfileRepository
 				.findByUserProfileId(favouriteProfileRequestDto.getUserProfileId());
+
 		if (!Objects.isNull(userProfile)) {
 			UserProfile userMatchProfile = userProfileRepository
 					.findByUserProfileId(favouriteProfileRequestDto.getUserMatchId());
 			if (!Objects.isNull(userMatchProfile)) {
+
 				Optional<UserFavourite> userFavouriteResponse = userFavouriteRepository
 						.findByUserProfileIdAndUserMatchId(userProfile, userMatchProfile);
 

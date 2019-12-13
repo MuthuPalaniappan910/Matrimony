@@ -15,6 +15,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.match.matrimony.constants.ApplicationConstants;
+import com.match.matrimony.dto.UserRegistrationRequestDto;
+import com.match.matrimony.dto.UserRegistrationResponseDto;
+import com.match.matrimony.exception.GeneralException;
 import com.match.matrimony.dto.DashboardResponse;
 import com.match.matrimony.dto.DashboardResponseDto;
 import com.match.matrimony.dto.FavouriteProfileRequestDto;
@@ -28,6 +31,7 @@ import com.match.matrimony.entity.UserProfile;
 import com.match.matrimony.exception.ProfileNotFoundException;
 import com.match.matrimony.exception.UserProfileException;
 import com.match.matrimony.service.UserProfileService;
+import com.match.matrimony.service.UserRegistrationService;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -44,6 +48,26 @@ import lombok.extern.slf4j.Slf4j;
 public class UserProfileController {
 	@Autowired
 	UserProfileService userProfileService;
+	@Autowired
+	UserRegistrationService userRegistrationService;
+
+	@PostMapping("")
+	public ResponseEntity<Optional<UserRegistrationResponseDto>> matrimonyRegistration(
+			@RequestBody UserRegistrationRequestDto userRegistrationRequestDto) throws GeneralException {
+		Optional<UserRegistrationResponseDto> userRegistrationResponseDto = userRegistrationService
+				.matrimonyRegistration(userRegistrationRequestDto);
+		if (userRegistrationResponseDto.isPresent()) {
+			log.info("registration method successfully executed");
+			userRegistrationResponseDto.get().setStatusCode(ApplicationConstants.REGISTRATION_SUCCESS_CODE);
+			userRegistrationResponseDto.get().setMessage(ApplicationConstants.REGISTRATION_SUCCESS_MESSAGE);
+			return new ResponseEntity<>(userRegistrationResponseDto, HttpStatus.OK);
+		}
+		log.error("enterd into registration method");
+		UserRegistrationResponseDto userRegistrationResponse= new UserRegistrationResponseDto();
+		userRegistrationResponse.setStatusCode(ApplicationConstants.REGISTRATION_FAILURE_CODE);
+		userRegistrationResponse.setMessage(ApplicationConstants.REGISTRATION_FAILURE_MESSAGE);
+		return new ResponseEntity<>(Optional.of(userRegistrationResponse), HttpStatus.NOT_FOUND);
+	}
 	
 	/**
 	 * The matchList method is used fetch all records based on pre defined criteria
@@ -88,9 +112,9 @@ public class UserProfileController {
 		Optional<UserProfileResponsedto> userProfileResponsedto=userProfileService.viewProfile(userProfileId);
 		if(!userProfileResponsedto.isPresent()) {
 			log.error("Exception occured in viewProfile of UserProfileController");
-			UserProfileResponsedto UserProfileResponsedto= new UserProfileResponsedto();
-			UserProfileResponsedto.setMessage(ApplicationConstants.NO_PROFILE);
-			UserProfileResponsedto.setStatusCode(ApplicationConstants.USERPROFILE_FAILURE_CODE);
+			UserProfileResponsedto userProfileResponse= new UserProfileResponsedto();
+			userProfileResponse.setMessage(ApplicationConstants.NO_PROFILE);
+			userProfileResponse.setStatusCode(ApplicationConstants.USERPROFILE_FAILURE_CODE);
 			return new ResponseEntity<>(userProfileResponsedto,HttpStatus.NOT_FOUND);
 		}
 		userProfileResponsedto.get().setMessage(ApplicationConstants.SUCCESS);
