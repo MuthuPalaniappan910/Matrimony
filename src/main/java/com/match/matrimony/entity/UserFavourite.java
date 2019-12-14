@@ -1,6 +1,5 @@
 package com.match.matrimony.entity;
 
-import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
@@ -20,11 +19,11 @@ public class UserFavourite {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long userFavouriteId;
 
-	@ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "userProfileId", nullable = false)
 	private UserProfile userProfileId;
 
-	@ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "userMatchId", nullable = false)
 	private UserProfile userMatchId;
 }
