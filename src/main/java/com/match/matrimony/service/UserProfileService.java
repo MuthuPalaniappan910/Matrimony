@@ -7,6 +7,8 @@ import com.match.matrimony.dto.DashboardResponse;
 import com.match.matrimony.dto.FavouriteProfileRequestDto;
 import com.match.matrimony.dto.FavouriteProfileResponsedto;
 import com.match.matrimony.dto.Favourites;
+import com.match.matrimony.dto.MatchProfileRequestDto;
+import com.match.matrimony.dto.MatchProfileResponsedto;
 import com.match.matrimony.dto.UserProfileResponsedto;
 import com.match.matrimony.entity.UserProfile;
 import com.match.matrimony.exception.ProfileNotFoundException;
@@ -20,5 +22,7 @@ public interface UserProfileService {
 
 	Optional<UserProfileResponsedto> viewProfile(Long userProfileId) throws UserProfileException;
 
+	List<Favourites> viewMatch(Long userMatchId) throws ProfileNotFoundException;
 	Optional<FavouriteProfileResponsedto> addFavourite(FavouriteProfileRequestDto favouriteProfileRequestDto) throws UserProfileException;
+	Optional<MatchProfileResponsedto> addMatch(MatchProfileRequestDto matchProfileRequestDto) throws ProfileNotFoundException;
 }

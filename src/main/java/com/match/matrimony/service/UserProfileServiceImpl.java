@@ -14,6 +14,8 @@ import com.match.matrimony.dto.DashboardResponse;
 import com.match.matrimony.dto.FavouriteProfileRequestDto;
 import com.match.matrimony.dto.FavouriteProfileResponsedto;
 import com.match.matrimony.dto.Favourites;
+import com.match.matrimony.dto.MatchProfileRequestDto;
+import com.match.matrimony.dto.MatchProfileResponsedto;
 import com.match.matrimony.dto.UserProfileResponsedto;
 import com.match.matrimony.entity.UserFavourite;
 import com.match.matrimony.entity.UserProfile;
@@ -32,6 +34,17 @@ public class UserProfileServiceImpl implements UserProfileService {
 
 	@Autowired
 	UserFavouriteRepository userFavouriteRepository;
+	
+	/**
+	 * Method enables the user to view all the profiles that he/she had added in
+	 * his/her favourites
+	 * 
+	 * @author Muthu
+	 * 
+	 * @param userProfileId
+	 * @return
+	 * @throws ProfileNotFoundException
+	 */
 
 	@Override
 	public List<Favourites> viewFavourites(Long userProfileId) throws ProfileNotFoundException {
@@ -119,7 +132,16 @@ public class UserProfileServiceImpl implements UserProfileService {
 		BeanUtils.copyProperties(userProfileResponse.get(), userProfileResponsedto);
 		return Optional.of(userProfileResponsedto);
 	}
-
+	
+	
+	/**
+	 * Method enables the user to login by entering the credentials to enjoy the
+	 * service
+	 * 
+	 * @author Muthu
+	 * @param loginRequestDto contains the userProfileId and userProfilePassword
+	 * @return
+	 */
 	@Override
 	public Optional<UserProfile> userLogin(Long userProfileId, String userProfilePassword) {
 		return userProfileRepository.findByUserProfileIdAndUserProfilePassword(userProfileId, userProfilePassword);
@@ -141,7 +163,7 @@ public class UserProfileServiceImpl implements UserProfileService {
 		log.info("Entering into addFavourite() of UserProfileServiceImpl");
 		UserProfile userProfile = userProfileRepository
 				.findByUserProfileId(favouriteProfileRequestDto.getUserProfileId());
-
+		
 		if (!Objects.isNull(userProfile)) {
 			UserProfile userMatchProfile = userProfileRepository
 					.findByUserProfileId(favouriteProfileRequestDto.getUserMatchId());
@@ -169,4 +191,72 @@ public class UserProfileServiceImpl implements UserProfileService {
 		return Optional.of(new FavouriteProfileResponsedto());
 	}
 
+	/**
+	 * Method returns the list of persons who had added his/her as favourites
+	 * 
+	 * @author Muthu
+	 * 
+	 * @param userMatchId
+	 * @return
+	 * @throws ProfileNotFoundException
+	 */
+	@Override
+	public List<Favourites> viewMatch(Long userMatchId) throws ProfileNotFoundException {
+		Optional<UserProfile> userProfile = userProfileRepository.findById(userMatchId);
+		List<Favourites> favouritesList = new ArrayList<>();
+		if (userProfile.isPresent()) {
+			List<UserFavourite> userFavourite = userFavouriteRepository.findAllByUserMatchId(userProfile.get());
+			if (!userFavourite.isEmpty()) {
+				userFavourite.forEach(favList -> {
+					Optional<UserProfile> userProfileResponse = userProfileRepository
+							.findById(favList.getUserProfileId().getUserProfileId());
+					if (userProfileResponse.isPresent()) {
+						Favourites favourites = new Favourites();
+						BeanUtils.copyProperties(userProfileResponse.get(), favourites);
+						favouritesList.add(favourites);
+					}
+				});
+				return favouritesList;
+			}
+			throw new ProfileNotFoundException(ApplicationConstants.PROFILE_NOT_FOUND);
+		}
+		throw new ProfileNotFoundException(ApplicationConstants.PROFILE_NOT_FOUND);
+	}
+
+	/**
+	 * @author Bindushree
+	 * 
+	 * @param matchProfileRequestDto
+	 * @return
+	 * @throws UserProfileException
+	 * @throws ProfileNotFoundException
+	 */
+	@Override
+	public Optional<MatchProfileResponsedto> addMatch(MatchProfileRequestDto matchProfileRequestDto)
+			throws ProfileNotFoundException {
+		Optional<UserProfile> userMatchResponse = userProfileRepository
+				.findById(matchProfileRequestDto.getUserMatchId());
+		Optional<UserProfile> userProfileResponse = userProfileRepository
+				.findById(matchProfileRequestDto.getUserProfileId());
+		if (userMatchResponse.isPresent() && userMatchResponse.isPresent()) {
+			List<UserFavourite> userMatch = userFavouriteRepository.findByUserMatchId(userMatchResponse.get());
+			if (userMatch.isEmpty()) {
+				throw new ProfileNotFoundException(ApplicationConstants.PROFILE_NOT_FOUND);
+			}
+			userMatch.forEach(matchList -> {
+				Optional<UserFavourite> userProfile = userFavouriteRepository.findByUserMatchIdAndUserProfileId(
+						matchList.getUserMatchId().getUserProfileId(), userProfileResponse.get());
+				if (userProfile.isPresent()) {
+					if (matchProfileRequestDto.getAction().equalsIgnoreCase("Reject")) {
+						userFavouriteRepository.deleteByUserProfileIdAndUserMatchId(userProfile.get(),
+								userProfile.get());
+					}
+					UserFavourite userFavourite = new UserFavourite();
+					userFavourite.setUserProfileId(userMatchResponse.get());
+					userFavouriteRepository.save(userFavourite);
+				}
+			});
+		}
+		return Optional.of(new MatchProfileResponsedto());
+	}
 }

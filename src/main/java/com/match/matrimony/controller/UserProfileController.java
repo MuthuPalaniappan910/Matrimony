@@ -26,6 +26,8 @@ import com.match.matrimony.dto.Favourites;
 import com.match.matrimony.dto.FavouritesResponseDto;
 import com.match.matrimony.dto.LoginRequestDto;
 import com.match.matrimony.dto.LoginResponseDto;
+import com.match.matrimony.dto.MatchProfileRequestDto;
+import com.match.matrimony.dto.MatchProfileResponsedto;
 import com.match.matrimony.dto.UserProfileResponsedto;
 import com.match.matrimony.entity.UserProfile;
 import com.match.matrimony.exception.ProfileNotFoundException;
@@ -34,7 +36,6 @@ import com.match.matrimony.service.UserProfileService;
 import com.match.matrimony.service.UserRegistrationService;
 
 import lombok.extern.slf4j.Slf4j;
-
 
 /**
  * 
@@ -48,6 +49,7 @@ import lombok.extern.slf4j.Slf4j;
 public class UserProfileController {
 	@Autowired
 	UserProfileService userProfileService;
+
 	@Autowired
 	UserRegistrationService userRegistrationService;
 
@@ -63,63 +65,65 @@ public class UserProfileController {
 			return new ResponseEntity<>(userRegistrationResponseDto, HttpStatus.OK);
 		}
 		log.error("enterd into registration method");
-		UserRegistrationResponseDto userRegistrationResponse= new UserRegistrationResponseDto();
+		UserRegistrationResponseDto userRegistrationResponse = new UserRegistrationResponseDto();
 		userRegistrationResponse.setStatusCode(ApplicationConstants.REGISTRATION_FAILURE_CODE);
 		userRegistrationResponse.setMessage(ApplicationConstants.REGISTRATION_FAILURE_MESSAGE);
 		return new ResponseEntity<>(Optional.of(userRegistrationResponse), HttpStatus.NOT_FOUND);
 	}
-	
+
 	/**
 	 * The matchList method is used fetch all records based on pre defined criteria
 	 * 
 	 * @param userProfileId
 	 * @return
 	 */
-	
+
 	@GetMapping("/{userProfileId}/dashboard")
 	public ResponseEntity<DashboardResponseDto> matchList(@PathVariable Long userProfileId) {
 		log.info("Entering into userProfile service");
-		Optional<List<DashboardResponse>> userProfiles=userProfileService.matchList(userProfileId);
-		DashboardResponseDto dashboardResponseDto=new DashboardResponseDto();
+		Optional<List<DashboardResponse>> userProfiles = userProfileService.matchList(userProfileId);
+		DashboardResponseDto dashboardResponseDto = new DashboardResponseDto();
 		log.debug("Checking whether user profile list is present");
-		if(userProfiles.isPresent()) {
+		if (userProfiles.isPresent()) {
 			log.info("User profile list is present");
 			dashboardResponseDto.setDashboardResponses(userProfiles.get());
 			dashboardResponseDto.setMessage(ApplicationConstants.SUCCESS);
 			dashboardResponseDto.setStatusCode(ApplicationConstants.USERPROFILE_SUCCESS_CODE);
 			return new ResponseEntity<>(dashboardResponseDto, HttpStatus.OK);
-			
+
 		}
 		log.error("User profile is empty");
 		dashboardResponseDto.setMessage(ApplicationConstants.NO_MATCHLIST_FOUND);
 		dashboardResponseDto.setStatusCode(ApplicationConstants.USERPROFILE_FAILURE_CODE);
 		return new ResponseEntity<>(dashboardResponseDto, HttpStatus.NOT_FOUND);
-		
-		
 	}
 
-
 	/**
-	 * Method to view the detailed profile view of the match that interests the user.
+	 * 
+	 * Method to view the detailed profile view of the match that interests the
+	 * user.
+	 * 
 	 * @author Chethana
 	 * @param userProfileId
 	 * @return
-	 * @throws UserProfileException throws if there is no record found for my interested match
+	 * @throws UserProfileException throws if there is no record found for my
+	 *                              interested match
 	 */
 	@GetMapping("/{userProfileId}")
-	public ResponseEntity<Optional<UserProfileResponsedto>> viewProfile(@PathVariable Long userProfileId) throws UserProfileException{
+	public ResponseEntity<Optional<UserProfileResponsedto>> viewProfile(@PathVariable Long userProfileId)
+			throws UserProfileException {
 		log.info("Entering into viewProfile() method of UserProfileController");
-		Optional<UserProfileResponsedto> userProfileResponsedto=userProfileService.viewProfile(userProfileId);
-		if(!userProfileResponsedto.isPresent()) {
+		Optional<UserProfileResponsedto> userProfileResponsedto = userProfileService.viewProfile(userProfileId);
+		if (!userProfileResponsedto.isPresent()) {
 			log.error("Exception occured in viewProfile of UserProfileController");
-			UserProfileResponsedto userProfileResponse= new UserProfileResponsedto();
+			UserProfileResponsedto userProfileResponse = new UserProfileResponsedto();
 			userProfileResponse.setMessage(ApplicationConstants.NO_PROFILE);
 			userProfileResponse.setStatusCode(ApplicationConstants.USERPROFILE_FAILURE_CODE);
-			return new ResponseEntity<>(userProfileResponsedto,HttpStatus.NOT_FOUND);
+			return new ResponseEntity<>(userProfileResponsedto, HttpStatus.NOT_FOUND);
 		}
 		userProfileResponsedto.get().setMessage(ApplicationConstants.SUCCESS);
 		userProfileResponsedto.get().setStatusCode(ApplicationConstants.USERPROFILE_SUCCESS_CODE);
-		return new ResponseEntity<>(userProfileResponsedto,HttpStatus.OK);		
+		return new ResponseEntity<>(userProfileResponsedto, HttpStatus.OK);
 	}
 
 	/**
@@ -127,7 +131,7 @@ public class UserProfileController {
 	 * service
 	 * 
 	 * @author Muthu
-	 * @param loginRequestDto contains the userProfileId and userProfileId
+	 * @param loginRequestDto contains the userProfileId and userProfilePassword
 	 * @return
 	 */
 
@@ -151,17 +155,20 @@ public class UserProfileController {
 		loginResponseDto.setMessage(ApplicationConstants.USERPROFILE_FAILURE_MESSAGE);
 		return new ResponseEntity<>(loginResponseDto, HttpStatus.NOT_FOUND);
 	}
-	
+
 	/**
 	 * Method to add the match as his/her favourite profile
+	 * 
 	 * @author Chethana
-	 * @param favouriteProfileRequestDto accepts userprofileId and Interested matchId
+	 * @param favouriteProfileRequestDto accepts userprofileId and Interested
+	 *                                   matchId
 	 * @return
-	 * @throws UserProfileException throws when failed to add the interested match to favourites
+	 * @throws UserProfileException throws when failed to add the interested match
+	 *                              to favourites
 	 */
 	@PostMapping("/favourites")
-	public ResponseEntity<Optional<FavouriteProfileResponsedto>> addFavourite(@RequestBody FavouriteProfileRequestDto favouriteProfileRequestDto) throws UserProfileException {
-
+	public ResponseEntity<Optional<FavouriteProfileResponsedto>> addFavourite(
+			@RequestBody FavouriteProfileRequestDto favouriteProfileRequestDto) throws UserProfileException {
 
 		Optional<FavouriteProfileResponsedto> favouriteProfileResponsedto = userProfileService
 				.addFavourite(favouriteProfileRequestDto);
@@ -175,8 +182,31 @@ public class UserProfileController {
 		favouriteProfileResponsedto.get().setStatusCode(ApplicationConstants.USERPROFILE_SUCCESS_CODE);
 		return new ResponseEntity<>(favouriteProfileResponsedto, HttpStatus.OK);
 	}
-	 
-	 
+	
+	/**
+	 * @author Bindhu
+	 * 
+	 * @param matchProfileRequestDto
+	 * @return
+	 * @throws UserProfileException
+	 * @throws ProfileNotFoundException
+	 */
+
+	@PostMapping("/matches")
+	public ResponseEntity<Optional<MatchProfileResponsedto>> addMatch(
+			@RequestBody MatchProfileRequestDto matchProfileRequestDto) throws UserProfileException, ProfileNotFoundException {
+
+		Optional<MatchProfileResponsedto> matchProfileResponsedto = userProfileService.addMatch(matchProfileRequestDto);
+		if (!matchProfileResponsedto.isPresent()) {
+			MatchProfileResponsedto matchProfileResponse = new MatchProfileResponsedto();
+			matchProfileResponse.setStatusCode(ApplicationConstants.USERPROFILE_FAILURE_CODE);
+			matchProfileResponse.setMessage(ApplicationConstants.USERPROFILE_FAILURE_MESSAGE);
+			return new ResponseEntity<>(Optional.of(matchProfileResponse), HttpStatus.NOT_FOUND);
+		}
+		matchProfileResponsedto.get().setMessage(ApplicationConstants.SUCCESS);
+		matchProfileResponsedto.get().setStatusCode(ApplicationConstants.USERPROFILE_SUCCESS_CODE);
+		return new ResponseEntity<>(matchProfileResponsedto, HttpStatus.OK);
+	}
 
 	/**
 	 * Method enables the user to view all the profiles that he/she had added in
@@ -205,6 +235,30 @@ public class UserProfileController {
 		return new ResponseEntity<>(favouritesResponseDto, HttpStatus.OK);
 	}
 
+	/**
+	 * Method returns the list of persons who had added his/her as favourites
+	 * 
+	 * @author Muthu
+	 * 
+	 * @param userMatchId
+	 * @return
+	 * @throws ProfileNotFoundException
+	 */
+
+	@GetMapping("{userMatchId}/match")
+	public ResponseEntity<FavouritesResponseDto> viewMatch(@PathVariable("userMatchId") Long userMatchId)
+			throws ProfileNotFoundException {
+		List<Favourites> matchList = userProfileService.viewMatch(userMatchId);
+		FavouritesResponseDto favouritesResponseDto = new FavouritesResponseDto();
+		if (matchList.isEmpty()) {
+			favouritesResponseDto.setStatusCode(ApplicationConstants.USERPROFILE_FAILURE_CODE);
+			favouritesResponseDto.setMessage(ApplicationConstants.USERPROFILE_EMPTY_FAVOURITES_LIST);
+			return new ResponseEntity<>(favouritesResponseDto, HttpStatus.NOT_FOUND);
+		}
+		favouritesResponseDto.setFavouritesList(matchList);
+		favouritesResponseDto.setStatusCode(ApplicationConstants.USERPROFILE_SUCCESS_CODE);
+		favouritesResponseDto.setMessage(ApplicationConstants.USERPROFILE_FAVOURITES_LIST);
+		return new ResponseEntity<>(favouritesResponseDto, HttpStatus.OK);
+	}
 
 }
-
