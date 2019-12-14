@@ -2,6 +2,7 @@ package com.match.matrimony.service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 import org.springframework.beans.BeanUtils;
@@ -162,10 +163,12 @@ public class UserProfileServiceImpl implements UserProfileService {
 		log.info("Entering into addFavourite() of UserProfileServiceImpl");
 		UserProfile userProfile = userProfileRepository
 				.findByUserProfileId(favouriteProfileRequestDto.getUserProfileId());
-		if (userProfile != null) {
+		
+		if (!Objects.isNull(userProfile)) {
 			UserProfile userMatchProfile = userProfileRepository
 					.findByUserProfileId(favouriteProfileRequestDto.getUserMatchId());
-			if (userMatchProfile != null) {
+			if (!Objects.isNull(userMatchProfile)) {
+
 				Optional<UserFavourite> userFavouriteResponse = userFavouriteRepository
 						.findByUserProfileIdAndUserMatchId(userProfile, userMatchProfile);
 

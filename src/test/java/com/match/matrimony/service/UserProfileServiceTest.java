@@ -251,18 +251,21 @@ public class UserProfileServiceTest {
 		userProfileServiceImpl.addFavourite(favouriteProfileRequestDto);
 	}
 
+	
 	@Test
 	public void testAddToFavouriteFavourite() throws UserProfileException {
 		Mockito.when(userProfileRepository.findByUserProfileId(Mockito.anyLong())).thenReturn(userProfile);
-		Optional<FavouriteProfileResponsedto > favouriteProfileResponsedto=userProfileServiceImpl.addFavourite(favouriteProfileRequestDto);
+		Optional<FavouriteProfileResponsedto> favouriteProfileResponsedto=userProfileServiceImpl.addFavourite(favouriteProfileRequestDto);
 		Assert.assertNotNull(favouriteProfileResponsedto);
 	}
+	
 
 	@Test(expected = UserProfileException.class)
 	public void testAddToFavouriteFavouriteNegative() throws UserProfileException {
 		Mockito.when(userProfileRepository.findByUserProfileId(Mockito.anyLong())).thenReturn(userProfile);
 		Mockito.when(userFavouriteRepository.findByUserProfileIdAndUserMatchId(Mockito.any(), Mockito.any()))
 				.thenReturn(Optional.of(userFavourite));
+
 		userProfileServiceImpl.addFavourite(favouriteProfileRequestDto);
 	}
 }

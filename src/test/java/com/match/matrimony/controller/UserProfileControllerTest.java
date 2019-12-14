@@ -64,8 +64,9 @@ public class UserProfileControllerTest {
 	Favourites favourites = new Favourites();
 
 	UserProfileResponsedto userProfileResponsedto = new UserProfileResponsedto();
-	FavouriteProfileResponsedto favouriteProfileResponsedto = new FavouriteProfileResponsedto();
 	FavouriteProfileRequestDto favouriteProfileRequestDto = new FavouriteProfileRequestDto();
+	FavouriteProfileResponsedto favouriteProfileResponsedto = new FavouriteProfileResponsedto();
+	
 
 	@Before
 	public void setUp() {
@@ -137,6 +138,9 @@ public class UserProfileControllerTest {
 		favouritesList.add(favourites);
 
 		userProfileResponsedto.setUserProfileId(1L);
+
+		favouriteProfileRequestDto.setUserMatchId(2L);
+		favouriteProfileRequestDto.setUserProfileId(1L);
 
 		favouriteProfileRequestDto.setUserMatchId(2L);
 		favouriteProfileRequestDto.setUserProfileId(1L);
@@ -217,6 +221,7 @@ public class UserProfileControllerTest {
 		Mockito.when(userProfileService.addFavourite(favouriteProfileRequestDto)).thenReturn(Optional.ofNullable(null));
 		ResponseEntity<Optional<FavouriteProfileResponsedto>> favouriteProfileResponse = userProfileController
 				.addFavourite(favouriteProfileRequestDto);
+
 		Assert.assertNotNull(favouriteProfileResponse);
 	}
 }
