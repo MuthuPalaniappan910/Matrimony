@@ -35,4 +35,18 @@ public class ApplicationConstants {
 	public static final String INVALID_MATCH="Invalid Match";
 	
 	
+	public static final String SKETCH_LIVES_FROM_GMAILID = "testmail2521@gmail.com";
+	public static final String SKETCH_LIVES_GMAIL_SUBJECT = "SKETCHLIVES MATRIMONY";
+	public static final String SKETCH_LIVES_TEXT_ONE = "WELCOME TO SKETCHLIVES MATRIMONY";
+	public static final String SKETCH_LIVES_TEXT_TWO = "HI";
+	public static final String SKETCH_LIVES_TEXT_THREE = "your sketchlives profileId is";
+	public static final String SKETCH_LIVES_TEXT_FOUR = "your sketchlives password is";
+	public static final String SKETCH_LIVES_TEXT_FIVE = "NOTE :- DONT SHARE YOUR CREDENTIALS";
+	public static final String NEXT_LINE = "\n";
+	public static final String WHITE_SPACE = "\t";
+
+	public static final Integer USER_FEMALE_AGE = 18;
+	public static final Integer USER_MALE_AGE = 21;
+
+	
 }

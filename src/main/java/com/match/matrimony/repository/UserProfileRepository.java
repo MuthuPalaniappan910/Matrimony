@@ -20,7 +20,5 @@ public interface UserProfileRepository extends JpaRepository<UserProfile, Long> 
 
 	Optional<UserProfile> findByUserProfileId(UserProfile userMatchId);
 
-	
-	
-
+	Optional<List<UserProfile>> findBySalaryGreaterThanEqual(Double salary);
 }

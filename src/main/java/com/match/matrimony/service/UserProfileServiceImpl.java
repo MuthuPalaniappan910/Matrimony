@@ -1,5 +1,7 @@
 package com.match.matrimony.service;
 
+import java.time.LocalDate;
+import java.time.Period;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -17,8 +19,10 @@ import com.match.matrimony.dto.Favourites;
 import com.match.matrimony.dto.MatchProfileRequestDto;
 import com.match.matrimony.dto.MatchProfileResponsedto;
 import com.match.matrimony.dto.UserProfileResponsedto;
+import com.match.matrimony.dto.UserProfileSearchResponseDto;
 import com.match.matrimony.entity.UserFavourite;
 import com.match.matrimony.entity.UserProfile;
+import com.match.matrimony.exception.GeneralException;
 import com.match.matrimony.exception.ProfileNotFoundException;
 import com.match.matrimony.exception.UserProfileException;
 import com.match.matrimony.repository.UserFavouriteRepository;
@@ -145,8 +149,10 @@ public class UserProfileServiceImpl implements UserProfileService {
 	 */
 	@Override
 	public Optional<UserProfile> userLogin(Long userProfileId, String userProfilePassword) {
-		return userProfileRepository.findByUserProfileIdAndUserProfilePassword(userProfileId, userProfilePassword);
-
+		UserProfile user = userProfileRepository.findByUserProfileId(userProfileId);
+		String encriptedpassword = user.getUserProfilePassword();
+		String decriptedPassword = encriptedpassword.toString();
+		return userProfileRepository.findByUserProfileIdAndUserProfilePassword(userProfileId, decriptedPassword);
 	}
 
 	/**
@@ -265,5 +271,30 @@ public class UserProfileServiceImpl implements UserProfileService {
 			});
 		}
 		return Optional.of(new MatchProfileResponsedto());
+	}
+	
+	/**
+	 * 
+	 * @param salary
+	 * @return
+	 * @throws GeneralException
+	 */
+	public Optional<List<UserProfileSearchResponseDto>> searchBySalary(Double salary) throws GeneralException {
+
+	List<UserProfile> userprofileList = userProfileRepository.findBySalaryGreaterThanEqual(salary).get();
+	List<UserProfileSearchResponseDto> userProfileSearchResponseDtoList = new ArrayList<>();
+	for (UserProfile userprofile : userprofileList) {
+	UserProfileSearchResponseDto userProfileSearchResponseDto = new UserProfileSearchResponseDto();
+	Integer age = Period.between(userprofile.getDateOfBirth(), LocalDate.now()).getYears();
+	userProfileSearchResponseDto.setUserProfileId(userprofile.getUserProfileId());
+	userProfileSearchResponseDto.setUserProfileName(userprofile.getUserProfileName());
+	userProfileSearchResponseDto.setReligion(userprofile.getReligion());
+	userProfileSearchResponseDto.setProfession(userprofile.getProfession());
+	userProfileSearchResponseDto.setSalary(userprofile.getSalary());
+	userProfileSearchResponseDto.setAge(age);
+	userProfileSearchResponseDtoList.add(userProfileSearchResponseDto);
+	}
+
+	return Optional.of(userProfileSearchResponseDtoList);
 	}
 }
