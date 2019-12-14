@@ -24,8 +24,6 @@ public interface UserFavouriteRepository extends JpaRepository<UserFavourite, Lo
 
 	void deleteByUserProfileIdAndUserMatchId(UserFavourite userFavourite, UserFavourite userFavourite2);
 
-	Optional<UserFavourite> findByUserProfileIdAndUserMatchId(UserProfile userProfileId, Long userProfileId2);
-
 	Optional<UserFavourite> findByUserProfileIdAndUserMatchId(UserProfile userProfile, UserProfile userMatchProfile);
 
 	Optional<UserFavourite> findByUserMatchIdAndUserProfileId(Long userProfileId, UserProfile userProfile);

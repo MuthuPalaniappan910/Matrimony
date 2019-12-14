@@ -34,7 +34,7 @@ public class UserProfileServiceImpl implements UserProfileService {
 
 	@Autowired
 	UserFavouriteRepository userFavouriteRepository;
-	
+
 	/**
 	 * Method enables the user to view all the profiles that he/she had added in
 	 * his/her favourites
@@ -118,8 +118,10 @@ public class UserProfileServiceImpl implements UserProfileService {
 	 * 
 	 * @author chethana
 	 * @param userProfileId
-	 * @return
-	 * @throws UserProfileException
+	 * @return UserProfileResponsedto returns details of matching profile details if
+	 *         present
+	 * @throws UserProfileException throws if there is no record found for my
+	 *                              interested match
 	 */
 	public Optional<UserProfileResponsedto> viewProfile(Long userProfileId) throws UserProfileException {
 		log.info("Entering into viewProfile() of UserProfileServiceImpl");
@@ -132,8 +134,7 @@ public class UserProfileServiceImpl implements UserProfileService {
 		BeanUtils.copyProperties(userProfileResponse.get(), userProfileResponsedto);
 		return Optional.of(userProfileResponsedto);
 	}
-	
-	
+
 	/**
 	 * Method enables the user to login by entering the credentials to enjoy the
 	 * service
@@ -155,7 +156,8 @@ public class UserProfileServiceImpl implements UserProfileService {
 	 * @param favouriteProfileRequestDto contains userprofileId and
 	 *                                   InterestedMatchprofileId
 	 * @return FavouriteProfileResponsedto
-	 * @throws UserProfileException
+	 * @throws UserProfileException throws when failed to add the interested match
+	 *                              to favourites
 	 * 
 	 */
 	public Optional<FavouriteProfileResponsedto> addFavourite(FavouriteProfileRequestDto favouriteProfileRequestDto)
@@ -163,7 +165,7 @@ public class UserProfileServiceImpl implements UserProfileService {
 		log.info("Entering into addFavourite() of UserProfileServiceImpl");
 		UserProfile userProfile = userProfileRepository
 				.findByUserProfileId(favouriteProfileRequestDto.getUserProfileId());
-		
+
 		if (!Objects.isNull(userProfile)) {
 			UserProfile userMatchProfile = userProfileRepository
 					.findByUserProfileId(favouriteProfileRequestDto.getUserMatchId());
@@ -173,7 +175,8 @@ public class UserProfileServiceImpl implements UserProfileService {
 						.findByUserProfileIdAndUserMatchId(userProfile, userMatchProfile);
 
 				if (userFavouriteResponse.isPresent()) {
-					log.error("Exception occured in addFavourite of UserProfileServiceImpl: "+ApplicationConstants.ALREADY_ADDED);
+					log.error("Exception occured in addFavourite of UserProfileServiceImpl: "
+							+ ApplicationConstants.ALREADY_ADDED);
 					throw new UserProfileException(ApplicationConstants.ALREADY_ADDED);
 				}
 				UserFavourite userFavourite = new UserFavourite();
@@ -181,11 +184,13 @@ public class UserProfileServiceImpl implements UserProfileService {
 				userFavourite.setUserProfileId(userProfile);
 				userFavouriteRepository.save(userFavourite);
 			} else {
-				log.error("Exception occured in addFavourite of UserProfileServiceImpl: "+ApplicationConstants.INVALID_MATCH);
+				log.error("Exception occured in addFavourite of UserProfileServiceImpl: "
+						+ ApplicationConstants.INVALID_MATCH);
 				throw new UserProfileException(ApplicationConstants.INVALID_MATCH);
 			}
 		} else {
-			log.error("Exception occured in addFavourite of UserProfileServiceImpl: "+ApplicationConstants.INVALID_PROFILE);
+			log.error("Exception occured in addFavourite of UserProfileServiceImpl: "
+					+ ApplicationConstants.INVALID_PROFILE);
 			throw new UserProfileException(ApplicationConstants.INVALID_PROFILE);
 		}
 		return Optional.of(new FavouriteProfileResponsedto());
@@ -225,6 +230,8 @@ public class UserProfileServiceImpl implements UserProfileService {
 
 	/**
 	 * @author Bindushree
+	 * 
+	 *         This method allows the user to accept his/her match requests
 	 * 
 	 * @param matchProfileRequestDto
 	 * @return

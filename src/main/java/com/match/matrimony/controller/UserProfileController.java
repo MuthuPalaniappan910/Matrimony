@@ -53,7 +53,17 @@ public class UserProfileController {
 	@Autowired
 	UserRegistrationService userRegistrationService;
 
-	@PostMapping("")
+	/**
+	 * @author Mahesh
+	 * 
+	 *         This method is allows the end user to register into the sketch lives
+	 *         matrimony with unique phone number
+	 * 
+	 * @param userRegistrationRequestDto
+	 * @return
+	 * @throws GeneralException
+	 */
+	@PostMapping
 	public ResponseEntity<Optional<UserRegistrationResponseDto>> matrimonyRegistration(
 			@RequestBody UserRegistrationRequestDto userRegistrationRequestDto) throws GeneralException {
 		Optional<UserRegistrationResponseDto> userRegistrationResponseDto = userRegistrationService
@@ -72,10 +82,14 @@ public class UserProfileController {
 	}
 
 	/**
-	 * The matchList method is used fetch all records based on pre defined criteria
+	 * @author Bindu
+	 * 
+	 *         The matchList method is used fetch all records based on Opposite
+	 *         gender and defined age criteria
 	 * 
 	 * @param userProfileId
-	 * @return
+	 * @return DashboardResponseDto returns list of matching profile details if
+	 *         present and empty list if not present
 	 */
 
 	@GetMapping("/{userProfileId}/dashboard")
@@ -105,7 +119,8 @@ public class UserProfileController {
 	 * 
 	 * @author Chethana
 	 * @param userProfileId
-	 * @return
+	 * @return returns details of matching profile details if
+	 *         present 
 	 * @throws UserProfileException throws if there is no record found for my
 	 *                              interested match
 	 */
@@ -132,7 +147,7 @@ public class UserProfileController {
 	 * 
 	 * @author Muthu
 	 * @param loginRequestDto contains the userProfileId and userProfilePassword
-	 * @return
+	 * @return LoginResponseDto returns gender and userprofileID
 	 */
 
 	@PostMapping("/login")
@@ -162,7 +177,7 @@ public class UserProfileController {
 	 * @author Chethana
 	 * @param favouriteProfileRequestDto accepts userprofileId and Interested
 	 *                                   matchId
-	 * @return
+	 * @return success code or failure code along with message
 	 * @throws UserProfileException throws when failed to add the interested match
 	 *                              to favourites
 	 */
@@ -182,9 +197,11 @@ public class UserProfileController {
 		favouriteProfileResponsedto.get().setStatusCode(ApplicationConstants.USERPROFILE_SUCCESS_CODE);
 		return new ResponseEntity<>(favouriteProfileResponsedto, HttpStatus.OK);
 	}
-	
+
 	/**
 	 * @author Bindhu
+	 * 
+	 * This method allows the user to accept his/her match requests
 	 * 
 	 * @param matchProfileRequestDto
 	 * @return
@@ -193,8 +210,9 @@ public class UserProfileController {
 	 */
 
 	@PostMapping("/matches")
-	public ResponseEntity<Optional<MatchProfileResponsedto>> addMatch(
-			@RequestBody MatchProfileRequestDto matchProfileRequestDto) throws UserProfileException, ProfileNotFoundException {
+	public ResponseEntity<Optional<MatchProfileResponsedto>> acceptMatchRequest(
+			@RequestBody MatchProfileRequestDto matchProfileRequestDto)
+			throws UserProfileException, ProfileNotFoundException {
 
 		Optional<MatchProfileResponsedto> matchProfileResponsedto = userProfileService.addMatch(matchProfileRequestDto);
 		if (!matchProfileResponsedto.isPresent()) {
