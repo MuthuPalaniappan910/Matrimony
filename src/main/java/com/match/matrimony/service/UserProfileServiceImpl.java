@@ -112,7 +112,7 @@ public class UserProfileServiceImpl implements UserProfileService {
 		log.info("Entering into viewProfile() of UserProfileServiceImpl");
 		Optional<UserProfile> userProfileResponse = userProfileRepository.findById(userProfileId);
 		if (!userProfileResponse.isPresent()) {
-			log.info("Exception Occured in viewProfile() of UserProfileServiceImpl");
+			log.error("Exception Occured in viewProfile() of UserProfileServiceImpl");
 			throw new UserProfileException(ApplicationConstants.NO_PROFILE);
 		}
 		UserProfileResponsedto userProfileResponsedto = new UserProfileResponsedto();
@@ -151,6 +151,7 @@ public class UserProfileServiceImpl implements UserProfileService {
 						.findByUserProfileIdAndUserMatchId(userProfile, userMatchProfile);
 
 				if (userFavouriteResponse.isPresent()) {
+					log.error("Exception occured in addFavourite of UserProfileServiceImpl: "+ApplicationConstants.ALREADY_ADDED);
 					throw new UserProfileException(ApplicationConstants.ALREADY_ADDED);
 				}
 				UserFavourite userFavourite = new UserFavourite();
@@ -158,9 +159,11 @@ public class UserProfileServiceImpl implements UserProfileService {
 				userFavourite.setUserProfileId(userProfile);
 				userFavouriteRepository.save(userFavourite);
 			} else {
+				log.error("Exception occured in addFavourite of UserProfileServiceImpl: "+ApplicationConstants.INVALID_MATCH);
 				throw new UserProfileException(ApplicationConstants.INVALID_MATCH);
 			}
 		} else {
+			log.error("Exception occured in addFavourite of UserProfileServiceImpl: "+ApplicationConstants.INVALID_PROFILE);
 			throw new UserProfileException(ApplicationConstants.INVALID_PROFILE);
 		}
 		return Optional.of(new FavouriteProfileResponsedto());
